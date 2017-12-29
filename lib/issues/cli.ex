@@ -1,13 +1,17 @@
 defmodule Issues.CLI do
   @default_count 4
 
+  alias Issues.TableFormatter
+
   @moduledoc """
   Handle the command line parsing and the dispatch to functions
   that generate a table of last n issues of a github project
   """
 
-  def run(argv) do
-    parse_args(argv)
+  def main(argv) do
+    argv
+    |> parse_args
+    |> process
   end
 
   @doc """
@@ -39,7 +43,7 @@ defmodule Issues.CLI do
     |> decode_response
     |> sort_into_ascending_order
     |> Enum.take(count)
-    |> print_table_for_columns(["number", "created_at", "title"])
+    |> TableFormatter.print_table_for_columns(["number", "created_at", "title"])
   end
 
   def decode_response({:ok, body}), do: body
@@ -52,37 +56,5 @@ defmodule Issues.CLI do
   def sort_into_ascending_order(list_of_issues) do
     Enum.sort(list_of_issues,
               fn(i1, i2) -> Map.get(i1, "created_at") <= Map.get(i2, "created_at") end)
-  end
-
-  def print_table_for_columns(list_of_issues, columns) do
-    n_trail = Enum.max(list_of_issues, fn(x) -> String.length(x["number"]) end) |> Map.get("number") |> to_string |> String.length
-    c_trail = Enum.max(list_of_issues, fn(x) -> String.length(x["created_at"]) end) |> Map.get("created_at") |> String.length
-    t_trail = Enum.max(list_of_issues, fn(x) -> String.length(x["title"]) end) |> Map.get("title") |> String.length
-
-    IO.puts "#{n_trail} - #{c_trail} - #{t_trail}"
-
-    head = ""
-    |> Kernel.<> String.pad_trailing("#", n_trail  )
-    |> Kernel.<>(" | ")
-    |> Kernel.<> String.pad_trailing("created_at", c_trail )
-    |> Kernel.<>(" | ")
-    |> Kernel.<> String.pad_trailing("titile", t_trail )
-    |> Kernel.<> "\n"
-    |> Kernel.<> String.pad_leading("-", n_trail , "-")
-    |> Kernel.<>(" + ")
-    |> Kernel.<> String.pad_leading("-", c_trail , "-")
-    |> Kernel.<>(" + ")
-    |> Kernel.<> String.pad_leading("-", t_trail , "-")
-
-    IO.puts head
-    for issue <- list_of_issues do
-      line = ""
-             |> Kernel.<>(String.pad_trailing(to_string(issue["number"]), n_trail ))
-             |> Kernel.<>(" | ")
-             |> Kernel.<>(String.pad_trailing(issue["created_at"], c_trail  ))
-             |> Kernel.<>(" | ")
-             |> Kernel.<>(String.pad_trailing(issue["title"], t_trail ))
-      IO.puts line
-    end
   end
 end
