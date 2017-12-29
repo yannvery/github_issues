@@ -1,21 +1,31 @@
 # Issues
 
-**TODO: Add description**
+Issues is a CLI to retrieve issues from a Github project.
+
+This is a simple exercise to pratice `elixir`
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `issues` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:issues, "~> 0.1.0"}
-  ]
-end
+```
+mix deps.get
+mix escript.build
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/issues](https://hexdocs.pm/issues).
+## Usage
+
+Show help:
+
+```
+./issues --help
+```
+
+Retrieve 10 issue from `rails` repository
+
+```
+./issues rails rails 10
+```
+
+## To Do
+
+- [ ] Add ExDoc
 
